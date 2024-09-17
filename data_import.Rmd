@@ -9,23 +9,21 @@ This document will show how to import data
 ```{r setup,echo=FALSE, message = FALSE }
 library(tidyverse)
 
+
 ```
 
+##Import the FAS Litters CSV 
 
-
-I'm an R Markdown document! 
-
-# Section 1
-
-Here's a **code chunk** that samples from 
-a _normal distribution_:
-
+Import the dataset and clean the names
 ```{r}
-samp = rnorm(100)
-length(samp)
+litters_df= read_csv("data_import_examples/FAS_litters.csv")
+view(litters_df)
+
+names(litters_df)
+
+litters_df = janitor::clean_names(litters_df)
+names(litters_df)
 ```
 
-# Section 2
-
-I can take the mean of the sample, too!
-The mean is `r mean(samp)`.
+##Look at the dataset
+# Section 1
