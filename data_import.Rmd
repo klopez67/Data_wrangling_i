@@ -25,5 +25,22 @@ litters_df = janitor::clean_names(litters_df)
 names(litters_df)
 ```
 
+##Import the FAS Pups CSV 
+
+Import the dataset and clean the names
+
+```{r}
+pups_df= read_csv("data_import_examples/FAS_pups.csv")
+view(pups_df)
+
+names(pups_df)
+
+pups_df = janitor::clean_names(pups_df)
+names(pups_df)
+```
+
+
+
 ##Look at the dataset
+
 # Section 1
