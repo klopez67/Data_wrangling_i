@@ -97,6 +97,19 @@ pulse_df= read_sas("data_import_examples/public_pulse_data.sas7bdat")
 pulse_df
 ```
 
+## Never use read.csv() 
+
+```{r}
+litters_df = read.csv("data_import_examples/FAS_litters.csv")
+litters_df
+```
+
+Never do this either: $ 
+```{r}
+litters_df$L 
+```
+
+
 
 # Look at the dataset
 
