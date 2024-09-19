@@ -749,3 +749,9 @@ litters_df =
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Data export. Write csv
+
+``` r
+write_csv(litters_df, "data_import_examples/cleaned_fas_litters.csv")
+```

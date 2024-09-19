@@ -207,4 +207,9 @@ litters_df =
   filter(group == "Con7") 
 ```
 
+Data export. Write csv
+```{r}
+write_csv(litters_df, "data_import_examples/cleaned_fas_litters.csv")
+```
+
 
