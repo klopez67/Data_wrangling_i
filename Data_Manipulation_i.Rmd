@@ -1,0 +1,196 @@
+---
+title: "Data_Manipulation"
+author: "Kimberly Lopez"
+date: "2024-09-19"
+output: github_document
+---
+This document will show *data manipulation*
+
+
+
+```{r setup,echo=FALSE, message = FALSE }
+library(tidyverse)
+library(readxl)
+library(haven)
+```
+
+Import the two datasets that we're going to manipulate. Used Janitor function to clean the names in each df. 
+
+```{r}
+litters_df= 
+  read_csv("data_import_examples/FAS_litters.csv",
+  na= c("NA","",".")
+  )
+
+litters_df= janitor::clean_names(litters_df)
+
+pups_df= 
+  read_csv("data_import_examples/FAS_pups.csv",
+  na= c("NA","",".")
+  ) 
+pups_df= janitor::clean_names(pups_df)
+
+```
+
+## 'select' 
+
+Use 'select()' to select variables. Selects which column you want to work with.
+
+```{r}
+select(litters_df, group, litter_number, gd0_weight)
+
+```
+
+Select a range of columns between group column and gd18_weight. 
+
+```{r}
+select(litters_df, group:gd18_weight)
+```
+
+To get rid of columns you dont want to use: 
+```{r}
+select(litters_df, -pups_survive) 
+```
+
+To get rid of 
+```{r}
+select(litters_df, -(group:gd18_weight))
+```
+
+To select columns that start with the same letters like "gd" you can select by:
+```{r}
+select(litters_df, starts_with("gd"))
+```
+
+To selct columns that contain key phrases 
+```{r}
+select(litters_df, contains("pups"))
+```
+Use select to rename variables
+```{r}
+select(litters_df, GROUP=group)
+
+rename(litters_df, GROUP= group) 
+
+select(litters_df, litter_number, gd0_weight, everything())
+
+```
+
+Use relocate function to reorder the variables 
+```{r}
+relocate(litters_df, litter_number, gd0_weight)
+```
+Example: In the pups data, select the columns containing litter number, sex, and PD ears
+```{r}
+select(pups_df, litter_number, sex, pd_ears)
+```
+
+
+## 'filter'
+
+This applies a condition which variables meet it will keep. This helps answer questions about a variable. 
+
+- Double equalls asks "is this variable =" 
+```{r}
+filter(litters_df,gd_of_birth ==20)
+filter(litters_df, gd_of_birth == 19)
+```
+
+- If you want variables > than a # use: 
+```{r}
+filter(litters_df, pups_born_alive >8)
+filter(litters_df, pups_born_alive >=8)
+```
+
+- Not equal to: 
+```{r}
+filter(litters_df, pups_born_alive != 9 )
+```
+
+# For Character Vectors: 
+ - for if it is exactly equal to one condition 
+  - for if it meet either or two conditions using %in% "is in"
+
+```{r}
+filter(litters_df, group == "Low8")
+filter(litters_df, group %in% c("Low 7", "Low8"))
+```
+
+- for if it meets either or two conditions in *two variables/ columns* 
+```{r}
+filter(litters_df, group %in% c("Low 7", "Low8"), pups_born_alive ==8 )
+```
+
+- To get rid of rows with *missing values* 
+- dont use is.na instead use drop_na() this drops rows with any missing data 
+
+```{r}
+
+drop_na(litters_df)
+drop_na(litters_df, gd0_weight)
+```
+Example: Pups 
+In the pups data:
+
+- Filter to include only pups with sex 1
+- Filter to include only pups with PD walk less than 11 and sex 2
+```{r}
+filter(pups_df, sex== 1)
+filter(pups_df, pd_walk < 11, sex ==2)
+```
+
+
+## 'mutate'
+
+To subtract an entire row by another row and defined a new variable: 
+- subtract weight gain and gd0 weight gain to get new variable wt_gain
+- can square values to get rid of skewness
+
+```{r}
+mutate(litters_df, wt_gain = gd18_weight - gd0_weight)
+
+```
+ 
+ - can operate on character variables 
+ - overwriting on a string variable to be all lower case inside of a df 
+ - manipulate multiple things at the same time too
+ 
+```{r}
+mutate(litters_df, group = str_to_lower(group))
+
+mutate(
+  litters_df, 
+  wt_gain = gd18_weight - gd0_weight, 
+  group = str_to_lower(group)
+)
+```
+ 
+ In the pups data:
+
+- Create a variable that subtracts 7 from PD pivot
+- Create a variable that is the sum of all the PD variables
+```{r}
+mutate(pups_df, pivot_minus7 = pd_pivot - 7)
+
+mutate(pups_df, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
+```
+
+## 'arrange' 
+
+Normally for aestheics, 
+- can reorder by weight default 
+- can reorder by descending value 
+- arrange by multiple things as the same time 
+```{r}
+
+arrange(litters_df, gd0_weight)
+
+arrange(litters_df, desc(gd0_weight))
+
+arrange(litters_df, pups_born_alive, gd0_weight)
+```
+## Piping 
+
+Use piping when doing multiple data maniuplations at the same time. Use |>
+
+
