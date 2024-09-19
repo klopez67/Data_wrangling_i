@@ -10,8 +10,7 @@ This document will show *data manipulation*
 
 ```{r setup,echo=FALSE, message = FALSE }
 library(tidyverse)
-library(readxl)
-library(haven)
+
 ```
 
 Import the two datasets that we're going to manipulate. Used Janitor function to clean the names in each df. 
