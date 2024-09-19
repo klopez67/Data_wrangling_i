@@ -193,4 +193,18 @@ arrange(litters_df, pups_born_alive, gd0_weight)
 
 Use piping when doing multiple data maniuplations at the same time. Use |>
 
+DO THIS 
+```{r}
+litters_df = 
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".", "")) %>% 
+  janitor::clean_names() |> 
+  mutate(
+    wt_gain = 
+      gd18_weight - gd0_weight,
+    group = str_to_lower(group)
+  ) |> 
+  select(-pups_born_alive) |> 
+  filter(group == "Con7") 
+```
+
 
