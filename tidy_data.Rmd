@@ -2,7 +2,7 @@
 title: "tidy_data"
 author: "Kimberly Lopez"
 date: "2024-09-24"
-output: html_document
+output: github_document
 ---
 
 Load packages 
