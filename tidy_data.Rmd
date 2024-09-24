@@ -1,0 +1,117 @@
+---
+title: "tidy_data"
+author: "Kimberly Lopez"
+date: "2024-09-24"
+output: html_document
+---
+
+Load packages 
+```{r}
+library(tidyverse)
+library(haven)
+```
+
+
+```{r}
+pulse_df= 
+  read_sas("data_import_examples/public_pulse_data.sas7bdat") |> 
+  janitor::clean_names()
+
+```
+
+Go from wide format to long format. State columns and where they will be stores given respective values. Use this if multiple variables contain the same values for a type of data. 
+```{r}
+pulse_tidy_df= 
+  pulse_df |>
+  pivot_longer(
+    cols= bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    values_to= "bdi")
+pulse_tidy_df
+
+```
+
+In the bdi column, there are prefix of bdi_score we can strip off the values by: 
+```{r}
+pulse_tidy_df = 
+  pivot_longer(
+    pulse_df, 
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi")
+
+pulse_tidy_df
+```
+
+After, we should mutate the visit variable to replace values "bl" since it is not in the format of months. Replace values "b" to 00m: 
+- relocate the columns so visit is in the second columns 
+```{r}
+pulse_tidy_df = 
+  pivot_longer(
+    pulse_df, 
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi")|>
+  mutate(
+    visit = replace(visit, visit == "bl", "00m"),
+    visit = factor(visit)) |>
+  relocate(id,visit)
+
+print(pulse_tidy_df, n = 12)
+```
+
+To do all the coding in one shot: 
+- janitor
+- pivot wide to long 
+- remove common prefix 
+- mutate data & relocate 
+```{r}
+pulse_df = 
+  haven::read_sas("data_import_examples/public_pulse_data.sas7bdat") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi") |>
+  mutate(
+    visit = replace(visit, visit == "bl", "00m"),
+    visit = factor(visit)) |>
+  relocate(id, visit)
+
+print(pulse_df, n = 12)
+```
+
+Doing one more example with the Litters data: 
+- gd_weight has 2 columns in the original dataset
+- use case match function to automatically take a variable and recode/replace as a value. Must list out all the options. 
+
+```{r}
+litters_df= 
+  read_csv("data_import_examples/FAS_litters.csv")|>
+  janitor::clean_names() |>
+  pivot_longer(
+    gd0_weight:gd18_weight, 
+    names_to = "gd_time",
+    values_to = "weight"
+  )|>
+  mutate(
+    gd_time = case_match(
+      gd_time, 
+      "gd0_weight" ~0,
+      "gd18_weight" ~ 18, 
+      
+    )
+  )
+litters_df
+```
+
+
+```{r}
+
+  
+```
+
+
