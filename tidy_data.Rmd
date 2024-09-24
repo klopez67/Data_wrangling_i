@@ -46,6 +46,7 @@ pulse_tidy_df
 ```
 
 After, we should mutate the visit variable to replace values "bl" since it is not in the format of months. Replace values "b" to 00m: 
+
 - relocate the columns so visit is in the second columns 
 ```{r}
 pulse_tidy_df = 
@@ -64,6 +65,7 @@ print(pulse_tidy_df, n = 12)
 ```
 
 To do all the coding in one shot: 
+
 - janitor
 - pivot wide to long 
 - remove common prefix 
@@ -124,15 +126,125 @@ analysis_df=
 
 # Pivot Wider
 Pivot Wider for readability. Helpful for post analysis results. 
+
 - took previous dataset 
 - took column names from time variable 
 - values are coming from the mean variable
+- use knitr::kable() for r built in readability
 
 ```{r}
 analysis_df |>
   pivot_wider(
     names_from = time, 
     values_from = mean
-  )
+  )|>
+  knitr::kable()
 ```
+
+# Binding Rows 
+
+Load data, to create a tidy dataframe that has all the variables from 3 different tables.
+
+Binding Tables
+
+- read excels with ranges that correspond to each table in the data set 
+- ensure each table corresponds with their movie name using mutate()
+
+```{r}
+fellowship_ring = 
+  readxl::read_excel("data_import_examples/LotR_Words.xlsx", range = "B3:D6") |>
+  mutate(movie = "fellowship_ring")
+
+two_towers = 
+  readxl::read_excel("data_import_examples/LotR_Words.xlsx", range = "F3:H6") |>
+  mutate(movie = "two_towers")
+
+return_king = 
+  readxl::read_excel("data_import_examples/LotR_Words.xlsx", range = "J3:L6") |>
+  mutate(movie = "return_king")
+
+```
+
+Use Bind rows to stack the tables together 
+
+- also clean up using janitor 
+- pivot to longer 
+
+```{r}
+lotr_df= 
+  bind_rows(fellowship_ring, two_towers,return_king)|> 
+  janitor:: clean_names()|>
+  pivot_longer(
+    female:male,
+    names_to = "sex", 
+    values_to = "words"
+    ) |>
+  relocate(movie)|>
+  mutate(race = str_to_lower(race))
+
+
+```
+
+
+# Joining Datasets 
+
+There are four major ways join dataframes x and y:
+- Inner: keeps data that appear in both x and y
+- Left: keeps data that appear in x
+- Right: keeps data that appear in y
+- Full: keeps data that appear in either x or y
+
+Join FAS datasets 
+
+- Import "litters" dataset
+- mutates so that we know what weight gained 
+- seperate the variable 
+- use seperate to seperate column 
+```{r}
+litters_df= 
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA","","."))|>
+  janitor::clean_names()|>
+  mutate( 
+    wt_gain = gd18_weight - gd0_weight,
+   )|>
+  separate(
+    group, into = c("dose","day_of_treatment"), sep=3 
+  )
+litters_df
+```
+Import FAS "pups" dataset 
+
+```{r}
+pups_df = 
+  read_csv("data_import_examples/FAS_pups.csv",na = c("NA", "", ".")) |>
+  janitor::clean_names() |>
+  mutate(
+    sex = 
+      case_match(
+        sex, 
+        1 ~ "male", 
+        2 ~ "female"),
+    sex = as.factor(sex))
+
+pups_df
+```
+ Join the datasets 
+- matching by variable litter number
+- using left joining into the pups data frame. 
+- rearrange so litter_number, dose, day of treatment follow order
+
+```{r}
+fas_df = 
+  left_join(pups_df, litters_df, by = "litter_number")|>
+  relocate (litter_number, dose, day_of_treatment)
+
+fas_df
+```
+
+# Other Functions on Names 
+- left_join(x, y)
+- inner_join (, )
+* if there are multiple of the same matched data, it will give warnings 
+- anti_join(, )
+
 
