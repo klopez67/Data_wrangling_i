@@ -30,6 +30,8 @@ pulse_df=
   janitor::clean_names()
 ```
 
+# Pivot longer
+
 Go from wide format to long format. State columns and where they will be
 stores given respective values. Use this if multiple variables contain
 the same values for a type of data.
@@ -214,3 +216,35 @@ litters_df
     ## 10 Con7  #4/2/95/3-3            20               6               0            6
     ## # ℹ 88 more rows
     ## # ℹ 2 more variables: gd_time <dbl>, weight <chr>
+
+Lets make up an analysis result table.
+
+``` r
+analysis_df= 
+  tibble(
+    group = c("treatment","control","control","treatment"),
+    time = c("pre","post","pre","post"),
+    mean = c(4,10,4.2,5)
+    
+  )
+```
+
+# Pivot Wider
+
+Pivot Wider for readability. Helpful for post analysis results. - took
+previous dataset - took column names from time variable - values are
+coming from the mean variable
+
+``` r
+analysis_df |>
+  pivot_wider(
+    names_from = time, 
+    values_from = mean
+  )
+```
+
+    ## # A tibble: 2 × 3
+    ##   group       pre  post
+    ##   <chr>     <dbl> <dbl>
+    ## 1 treatment   4       5
+    ## 2 control     4.2    10

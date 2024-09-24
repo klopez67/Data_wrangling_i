@@ -19,6 +19,7 @@ pulse_df=
 
 ```
 
+# Pivot longer
 Go from wide format to long format. State columns and where they will be stores given respective values. Use this if multiple variables contain the same values for a type of data. 
 ```{r}
 pulse_tidy_df= 
@@ -109,9 +110,29 @@ litters_df
 ```
 
 
+Lets make up an analysis result table.
 ```{r}
-
+analysis_df= 
+  tibble(
+    group = c("treatment","control","control","treatment"),
+    time = c("pre","post","pre","post"),
+    mean = c(4,10,4.2,5)
+    
+  )
   
 ```
 
+# Pivot Wider
+Pivot Wider for readability. Helpful for post analysis results. 
+- took previous dataset 
+- took column names from time variable 
+- values are coming from the mean variable
+
+```{r}
+analysis_df |>
+  pivot_wider(
+    names_from = time, 
+    values_from = mean
+  )
+```
 
